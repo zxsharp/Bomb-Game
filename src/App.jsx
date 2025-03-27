@@ -7,7 +7,7 @@ import './App.css';
 const { playSound, startTicking, stopTicking } = createGameSounds();
 
 const BombGame = () => {
-  const [time, setTime] = useState(60); // 5 minutes in seconds
+  const [time, setTime] = useState(60);
   const [isExploded, setIsExploded] = useState(false);
   const [isDefused, setIsDefused] = useState(false);
   const [gameState, setGameState] = useState({
@@ -20,7 +20,7 @@ const BombGame = () => {
   });
   const [isSoundEnabled, setSoundEnabled] = useState(false);
 
-  // Available colors (removed red)
+  
   const wires = useMemo(() => ['blue', 'red', 'yellow', 'green'], []);
   const buttons = useMemo(() => ['blue', 'yellow', 'green'], []);
 
@@ -54,6 +54,7 @@ const BombGame = () => {
     }
     return () => stopTicking();
   }, [isExploded, isDefused, isSoundEnabled]);
+  
 
   // Handle wire cut
   const handleWireCut = useCallback((wire) => {
@@ -79,17 +80,7 @@ const BombGame = () => {
 
       const newWiresCut = [...prev.wiresCut, wire];
 
-      const allPressedButtonsWiresCut = Object.entries(prev.pressedButtons).every(
-        ([color, isPressed]) => !isPressed || newWiresCut.includes(color)
-      );
-
-      const onlyPressedButtonsWiresCut = newWiresCut.every(
-        color => prev.pressedButtons[color]
-      );
-
-      if (allPressedButtonsWiresCut && 
-          onlyPressedButtonsWiresCut && 
-          Object.values(prev.pressedButtons).filter(Boolean).length === 3) {
+      if (newWiresCut.length === 3) {
         if (isSoundEnabled) {
           stopTicking();
           setTimeout(() => playSound('victory'), 500);
@@ -135,13 +126,6 @@ const BombGame = () => {
       }
       return !prev;
     });
-  }, [isExploded, isDefused]);
-
-
-  const gameMessage = useMemo(() => {
-    if (isExploded) return <div className="message">BOOM! Game Over!</div>;
-    if (isDefused) return <div className="message">Bomb Defused! You Win!</div>;
-    return null;
   }, [isExploded, isDefused]);
 
 
